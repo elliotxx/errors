@@ -1,0 +1,47 @@
+# Reference from:
+# https://github.com/c-bata/go-prompt/blob/master/.github/workflows/test.yml
+name: Code check
+on:
+  pull_request:
+    branches:
+    - master
+  push:
+    branches:
+    - master
+
+jobs:
+  test:
+    name: Run test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+    - name: Set up Go 1.17
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+      id: go
+    - uses: actions/checkout@v2
+    - name: Running go tests
+      env:
+        GO111MODULE: on
+      run: make cover
+    - name: Send coverage
+      uses: shogo82148/actions-goveralls@v1
+      with:
+        path-to-profile: coverage.out
+  lint:
+    name: Run lint check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.17
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.17
+        id: go
+      - uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.41.0
