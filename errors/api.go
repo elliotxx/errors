@@ -33,6 +33,7 @@ func WithErrorCode(errCode ErrorCoder, cause error) DetailError {
 			}
 		}
 	}
+
 	return &detailErr{nil, cause}
 }
 
@@ -55,8 +56,10 @@ func Msg(err error) string {
 		if e, ok := err.(ErrorCoder); ok {
 			return e.Msg()
 		}
+
 		return err.Error()
 	}
+
 	return ""
 }
 
@@ -66,6 +69,7 @@ func Cause(err error) error {
 			return e.Cause()
 		}
 	}
+
 	return err
 }
 
@@ -75,6 +79,7 @@ func ErrorCode(err error) ErrorCoder {
 			return e
 		}
 	}
+
 	return nil
 }
 

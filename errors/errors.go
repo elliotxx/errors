@@ -16,6 +16,7 @@ func (e *errorCode) Code() string {
 	if e == nil {
 		return ""
 	}
+
 	return e.code
 }
 
@@ -23,6 +24,7 @@ func (e *errorCode) Msg() string {
 	if e == nil {
 		return ""
 	}
+
 	return e.message
 }
 
@@ -30,6 +32,7 @@ func (e *errorCode) Error() string {
 	if e == nil {
 		return ""
 	}
+
 	switch {
 	case e.code != "" && e.message == "":
 		return fmt.Sprintf("code [%s]", e.code)
@@ -49,14 +52,17 @@ func (e *errorCode) Format(s fmt.State, verb rune) {
 			if len(e.Code()) != 0 {
 				fmt.Fprintf(s, "ErrorCode: %s\n", e.Code())
 			}
+
 			if len(e.Msg()) != 0 {
 				fmt.Fprintf(s, "Message: %s\n", e.Msg())
 			}
+
 			return
 		}
+
 		fallthrough
 	case 's':
-		io.WriteString(s, e.Error())
+		_, _ = io.WriteString(s, e.Error())
 	case 'q':
 		fmt.Fprintf(s, "%q", e.Error())
 	}
@@ -73,6 +79,7 @@ func (e *detailErr) Cause() error {
 	if e == nil {
 		return nil
 	}
+
 	return e.cause
 }
 
@@ -84,8 +91,10 @@ func (e *detailErr) WithCode(code string) DetailError {
 	if e == nil {
 		return e
 	}
+
 	ee := copyDetailErr(e)
 	ee.code = code
+
 	return ee
 }
 
@@ -93,8 +102,10 @@ func (e *detailErr) WithMsg(msg string) DetailError {
 	if e == nil {
 		return e
 	}
+
 	ee := copyDetailErr(e)
 	ee.message = msg
+
 	return ee
 }
 
@@ -102,8 +113,10 @@ func (e *detailErr) WithCause(err error) DetailError {
 	if e == nil {
 		return e
 	}
+
 	ee := copyDetailErr(e)
 	ee.cause = err
+
 	return ee
 }
 
@@ -111,11 +124,13 @@ func (e *detailErr) WithErrorCode(errCode ErrorCoder) DetailError {
 	if e == nil {
 		return e
 	}
+
 	ee := copyDetailErr(e)
 	ee.errorCode = &errorCode{
 		code:    errCode.Code(),
 		message: errCode.Msg(),
 	}
+
 	return ee
 }
 
@@ -123,7 +138,9 @@ func (e *detailErr) Error() string {
 	if e == nil {
 		return ""
 	}
+
 	codeErr := e.errorCode.Error()
+
 	switch codeErr {
 	case "":
 		return fmt.Sprintf("cause [%+v]", e.cause)
@@ -137,14 +154,17 @@ func (e *detailErr) Format(s fmt.State, verb rune) {
 	case 'v':
 		if s.Flag('+') {
 			fmt.Fprintf(s, "%+v", e.errorCode)
+
 			if e.cause != nil {
 				fmt.Fprintf(s, "Cause: %+v\n", e.cause)
 			}
+
 			return
 		}
+
 		fallthrough
 	case 's':
-		io.WriteString(s, e.Error())
+		_, _ = io.WriteString(s, e.Error())
 	case 'q':
 		fmt.Fprintf(s, "%q", e.Error())
 	}

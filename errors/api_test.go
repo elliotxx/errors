@@ -10,6 +10,7 @@ func TestWrap(t *testing.T) {
 		err     error
 		message string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -32,6 +33,7 @@ func TestWrap(t *testing.T) {
 			wantErr: "failed to wrap2: failed to wrap: code [InvalidParams], msg [parameters must be valid], cause [name is empty]",
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := Wrap(tt.args.err, tt.args.message); (err != nil) && err.Error() != tt.wantErr {

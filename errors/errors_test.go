@@ -10,6 +10,7 @@ func Test_errorCode_Error(t *testing.T) {
 		code    string
 		message string
 	}
+
 	tests := []struct {
 		name   string
 		fields fields
@@ -17,6 +18,7 @@ func Test_errorCode_Error(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &errorCode{
@@ -35,6 +37,7 @@ func Test_errorCode_Code(t *testing.T) {
 		code    string
 		message string
 	}
+
 	tests := []struct {
 		name   string
 		fields fields
@@ -42,6 +45,7 @@ func Test_errorCode_Code(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &errorCode{
@@ -60,6 +64,7 @@ func Test_errorCode_Msg(t *testing.T) {
 		code    string
 		message string
 	}
+
 	tests := []struct {
 		name   string
 		fields fields
@@ -67,6 +72,7 @@ func Test_errorCode_Msg(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &errorCode{
@@ -85,6 +91,7 @@ func Test_detailErr_Error(t *testing.T) {
 		errorCode errorCode
 		cause     error
 	}
+
 	tests := []struct {
 		name   string
 		fields fields
@@ -92,6 +99,7 @@ func Test_detailErr_Error(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &detailErr{
@@ -110,6 +118,7 @@ func Test_detailErr_Format(t *testing.T) {
 		errorCode errorCode
 		cause     error
 	}
+
 	tests := []struct {
 		name   string
 		fields fields
@@ -167,6 +176,7 @@ Message: test message
 `,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &detailErr{
@@ -185,6 +195,7 @@ func Test_detailErr_Cause(t *testing.T) {
 		errorCode errorCode
 		cause     error
 	}
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -192,6 +203,7 @@ func Test_detailErr_Cause(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &detailErr{
