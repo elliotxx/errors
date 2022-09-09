@@ -49,13 +49,7 @@ func (e *errorCode) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 'v':
 		if s.Flag('+') {
-			if len(e.Code()) != 0 {
-				fmt.Fprintf(s, "ErrorCode: %s\n", e.Code())
-			}
-
-			if len(e.Msg()) != 0 {
-				fmt.Fprintf(s, "Message: %s\n", e.Msg())
-			}
+			fmt.Fprintf(s, "%s", e.Error())
 
 			return
 		}
@@ -143,9 +137,9 @@ func (e *detailErr) Error() string {
 
 	switch codeErr {
 	case "":
-		return fmt.Sprintf("cause [%+v]", e.cause)
+		return fmt.Sprintf("cause [%s]", e.cause.Error())
 	default:
-		return fmt.Sprintf("%s, cause [%+v]", codeErr, e.cause)
+		return fmt.Sprintf("%s, cause [%s]", codeErr, e.cause.Error())
 	}
 }
 
@@ -153,10 +147,13 @@ func (e *detailErr) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 'v':
 		if s.Flag('+') {
-			fmt.Fprintf(s, "%+v", e.errorCode)
+			codeErr := fmt.Sprintf("%+v", e.errorCode)
 
-			if e.cause != nil {
-				fmt.Fprintf(s, "Cause: %+v\n", e.cause)
+			switch codeErr {
+			case "":
+				fmt.Fprintf(s, "cause [%+v]", e.cause)
+			default:
+				fmt.Fprintf(s, "%s, cause [%+v]", codeErr, e.cause)
 			}
 
 			return

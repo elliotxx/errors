@@ -133,10 +133,7 @@ func Test_detailErr_Format(t *testing.T) {
 				},
 				cause: fmt.Errorf("test cause"),
 			},
-			want: `ErrorCode: TestCode
-Message: test message
-Cause: test cause
-`,
+			want: `code [TestCode], msg [test message], cause [test cause]`,
 		},
 		{
 			name: "missing code",
@@ -146,9 +143,7 @@ Cause: test cause
 				},
 				cause: fmt.Errorf("test cause"),
 			},
-			want: `Message: test message
-Cause: test cause
-`,
+			want: `msg [test message], cause [test cause]`,
 		},
 		{
 			name: "missing message",
@@ -158,9 +153,7 @@ Cause: test cause
 				},
 				cause: fmt.Errorf("test cause"),
 			},
-			want: `ErrorCode: TestCode
-Cause: test cause
-`,
+			want: `code [TestCode], cause [test cause]`,
 		},
 		{
 			name: "missing cause",
@@ -171,10 +164,19 @@ Cause: test cause
 				},
 				cause: nil,
 			},
-			want: `ErrorCode: TestCode
-Message: test message
-`,
+			want: `code [TestCode], msg [test message], cause [<nil>]`,
 		},
+		// {
+		// 	name: "full error with stack trace",
+		// 	fields: fields{
+		// 		errorCode: errorCode{
+		// 			code:    "TestCode",
+		// 			message: "test message",
+		// 		},
+		// 		cause: errors2.Errorf("test cause"),
+		// 	},
+		// 	want: ``,
+		// },
 	}
 
 	for _, tt := range tests {
