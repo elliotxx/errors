@@ -31,3 +31,25 @@ go get -u github.com/elliotxx/errors
 * 更详细的错误信息，比如错误码、错误信息、错误原因、错误堆栈等
 * 更强大的 API
 * 轻量级
+
+## 📚 样例
+```go
+package errcodes
+
+import "github.com/elliotxx/errors"
+
+var (
+	Success                    = errors.NewErrorCode("00000", "success")
+	NotFound                   = errors.NewErrorCode("A0100", "not found")
+	AccessPermissionError      = errors.NewErrorCode("A0200", "abnormal access permission")
+	AbnormalUserOperation      = errors.NewErrorCode("A0300", "abnormal user operation")
+	InvalidParams              = errors.NewErrorCode("A0400", "invalid params")
+	BlankRequiredParams        = errors.NewErrorCode("A0401", "required parameter is blank")
+	MalformedParams            = errors.NewErrorCode("A0403", "parameter format mismatch")
+	ServerError                = errors.NewErrorCode("A0500", "server error")
+	TooManyRequests            = errors.NewErrorCode("A0501", "too many requests")
+	ConcurrentExceedLimit      = errors.NewErrorCode("A0502", "the request parallel number exceeds the limit")
+	WaitUserOperation          = errors.NewErrorCode("A0503", "please wait for user operation")
+	RepeatedRequest            = errors.NewErrorCode("A0504", "repeated request")
+)
+```
