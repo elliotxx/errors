@@ -8,11 +8,25 @@ import (
 
 // New returns an error with the supplied message.
 // New also records the stack trace at the point it was called.
-func New(causeMsg string) DetailError {
+func New(causeStr string) DetailError {
 	return &detailErr{
 		nil,
 		// Create an error that contains the stack trace
-		errors2.New(causeMsg),
+		errors2.New(causeStr),
+	}
+}
+
+func NewErrorCode(code string, message string) ErrorCode {
+	return &errorCoder{
+		code:    code,
+		message: message,
+	}
+}
+
+func NewDetailError(code string, message string, cause error) DetailError {
+	return &detailErr{
+		errorCoder: &errorCoder{code, message},
+		cause:      cause,
 	}
 }
 
@@ -24,67 +38,34 @@ func Errorf(format string, args ...interface{}) DetailError {
 	}
 }
 
-func WithErrorCode(errCode ErrorCoder, cause error) DetailError {
-	if errCode != nil {
-		if e, ok := errCode.(*errorCode); ok {
-			return &detailErr{
-				e,
-				cause,
-			}
-		}
-	}
-
-	return &detailErr{nil, cause}
-}
-
-func NewErrorCode(code string, message string) ErrorCoder {
-	return &errorCode{
-		code:    code,
-		message: message,
-	}
-}
-
-func NewDetailError(code string, message string, cause error) DetailError {
+func Code(code string) DetailError {
 	return &detailErr{
-		errorCode: &errorCode{code, message},
-		cause:     cause,
+		errorCoder: &errorCoder{
+			code: code,
+		},
 	}
 }
 
-func Msg(err error) string {
-	if err != nil {
-		if e, ok := err.(ErrorCoder); ok {
-			return e.Msg()
-		}
-
-		return err.Error()
+func Msg(msg string) DetailError {
+	return &detailErr{
+		errorCoder: &errorCoder{
+			message: msg,
+		},
 	}
-
-	return ""
 }
 
-func Cause(err error) error {
-	if err != nil {
-		if e, ok := err.(Causer); ok {
-			return e.Cause()
-		}
+func Cause(cause error) DetailError {
+	return &detailErr{
+		cause: cause,
 	}
-
-	return err
-}
-
-func ErrorCode(err error) ErrorCoder {
-	if err != nil {
-		if e, ok := err.(ErrorCoder); ok {
-			return e
-		}
-	}
-
-	return nil
 }
 
 func InvalidErrorCode(code string) bool {
 	return strings.TrimSpace(code) == ""
+}
+
+func Zero(e DetailError) bool {
+	return e == nil || e.GetCode() == "" && e.GetMsg() == "" && e.GetCause() == nil
 }
 
 // Wrap returns an error annotating err with a stack trace

@@ -5,14 +5,14 @@ import (
 	"io"
 )
 
-var _ ErrorCoder = (*errorCode)(nil)
+var _ ErrorCode = (*errorCoder)(nil)
 
-type errorCode struct {
+type errorCoder struct {
 	code    string
 	message string
 }
 
-func (e *errorCode) Code() string {
+func (e *errorCoder) GetCode() string {
 	if e == nil {
 		return ""
 	}
@@ -20,7 +20,7 @@ func (e *errorCode) Code() string {
 	return e.code
 }
 
-func (e *errorCode) Msg() string {
+func (e *errorCoder) GetMsg() string {
 	if e == nil {
 		return ""
 	}
@@ -28,7 +28,40 @@ func (e *errorCode) Msg() string {
 	return e.message
 }
 
-func (e *errorCode) Error() string {
+func (e *errorCoder) Code(code string) ErrorCode {
+	if e == nil {
+		return e
+	}
+
+	ee := copyErrorCode(e)
+	ee.code = code
+
+	return ee
+}
+
+func (e *errorCoder) Msg(msg string) ErrorCode {
+	if e == nil {
+		return e
+	}
+
+	ee := copyErrorCode(e)
+	ee.message = msg
+
+	return ee
+}
+
+func (e *errorCoder) Cause(err error) DetailError {
+	if e == nil {
+		return nil
+	}
+
+	ee := copyFromErrorCode(e)
+	ee.cause = err
+
+	return ee
+}
+
+func (e *errorCoder) Error() string {
 	if e == nil {
 		return ""
 	}
@@ -45,7 +78,7 @@ func (e *errorCode) Error() string {
 	}
 }
 
-func (e *errorCode) Format(s fmt.State, verb rune) {
+func (e *errorCoder) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 'v':
 		if s.Flag('+') {
@@ -65,11 +98,27 @@ func (e *errorCode) Format(s fmt.State, verb rune) {
 var _ DetailError = (*detailErr)(nil)
 
 type detailErr struct {
-	*errorCode
+	*errorCoder
 	cause error
 }
 
-func (e *detailErr) Cause() error {
+func (e *detailErr) GetCode() string {
+	if e == nil || e.errorCoder == nil {
+		return ""
+	}
+
+	return e.code
+}
+
+func (e *detailErr) GetMsg() string {
+	if e == nil || e.errorCoder == nil {
+		return ""
+	}
+
+	return e.message
+}
+
+func (e *detailErr) GetCause() error {
 	if e == nil {
 		return nil
 	}
@@ -77,11 +126,11 @@ func (e *detailErr) Cause() error {
 	return e.cause
 }
 
-func (e *detailErr) ErrorCode() ErrorCoder {
-	return e.errorCode
+func (e *detailErr) GetErrorCode() ErrorCode {
+	return e.errorCoder
 }
 
-func (e *detailErr) WithCode(code string) DetailError {
+func (e *detailErr) Code(code string) DetailError {
 	if e == nil {
 		return e
 	}
@@ -92,7 +141,7 @@ func (e *detailErr) WithCode(code string) DetailError {
 	return ee
 }
 
-func (e *detailErr) WithMsg(msg string) DetailError {
+func (e *detailErr) Msg(msg string) DetailError {
 	if e == nil {
 		return e
 	}
@@ -103,7 +152,7 @@ func (e *detailErr) WithMsg(msg string) DetailError {
 	return ee
 }
 
-func (e *detailErr) WithCause(err error) DetailError {
+func (e *detailErr) Cause(err error) DetailError {
 	if e == nil {
 		return e
 	}
@@ -114,40 +163,41 @@ func (e *detailErr) WithCause(err error) DetailError {
 	return ee
 }
 
-func (e *detailErr) WithErrorCode(errCode ErrorCoder) DetailError {
+func (e *detailErr) ErrorCode(errCode ErrorCode) DetailError {
 	if e == nil {
 		return e
 	}
 
 	ee := copyDetailErr(e)
-	ee.errorCode = &errorCode{
-		code:    errCode.Code(),
-		message: errCode.Msg(),
+	ee.errorCoder = &errorCoder{
+		code:    errCode.GetCode(),
+		message: errCode.GetMsg(),
 	}
 
 	return ee
 }
 
 func (e *detailErr) Error() string {
-	if e == nil {
+	if Zero(e) {
 		return ""
 	}
 
-	codeErr := e.errorCode.Error()
-
-	switch codeErr {
-	case "":
-		return fmt.Sprintf("cause [%s]", e.cause.Error())
-	default:
-		return fmt.Sprintf("%s, cause [%s]", codeErr, e.cause.Error())
+	if e.errorCoder != nil && e.cause == nil {
+		return e.errorCoder.Error()
 	}
+
+	if e.errorCoder == nil && e.cause != nil {
+		return fmt.Sprintf("cause [%s]", e.cause.Error())
+	}
+
+	return fmt.Sprintf("%s, cause [%s]", e.errorCoder.Error(), e.cause.Error())
 }
 
 func (e *detailErr) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 'v':
 		if s.Flag('+') {
-			codeErr := fmt.Sprintf("%+v", e.errorCode)
+			codeErr := fmt.Sprintf("%+v", e.errorCoder)
 
 			switch codeErr {
 			case "":
@@ -167,12 +217,29 @@ func (e *detailErr) Format(s fmt.State, verb rune) {
 	}
 }
 
+func copyFromErrorCode(e *errorCoder) *detailErr {
+	return &detailErr{
+		&errorCoder{
+			code:    e.GetCode(),
+			message: e.GetMsg(),
+		},
+		nil,
+	}
+}
+
 func copyDetailErr(e *detailErr) *detailErr {
 	return &detailErr{
-		&errorCode{
-			code:    e.Code(),
-			message: e.Msg(),
+		&errorCoder{
+			code:    e.GetCode(),
+			message: e.GetMsg(),
 		},
 		e.cause,
+	}
+}
+
+func copyErrorCode(c *errorCoder) *errorCoder {
+	return &errorCoder{
+		code:    c.GetCode(),
+		message: c.GetMsg(),
 	}
 }

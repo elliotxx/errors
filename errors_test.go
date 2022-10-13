@@ -21,12 +21,12 @@ func Test_errorCode_Error(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			e := &errorCode{
+			e := &errorCoder{
 				code:    tt.fields.code,
 				message: tt.fields.message,
 			}
 			if got := e.Error(); got != tt.want {
-				t.Errorf("errorCode.Error() = %v, want %v", got, tt.want)
+				t.Errorf("errorCoder.Error() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -48,12 +48,12 @@ func Test_errorCode_Code(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			e := &errorCode{
+			e := &errorCoder{
 				code:    tt.fields.code,
 				message: tt.fields.message,
 			}
-			if got := e.Code(); got != tt.want {
-				t.Errorf("errorCode.Code() = %v, want %v", got, tt.want)
+			if got := e.GetCode(); got != tt.want {
+				t.Errorf("errorCoder.Code() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -75,12 +75,12 @@ func Test_errorCode_Msg(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			e := &errorCode{
+			e := &errorCoder{
 				code:    tt.fields.code,
 				message: tt.fields.message,
 			}
-			if got := e.Msg(); got != tt.want {
-				t.Errorf("errorCode.Msg() = %v, want %v", got, tt.want)
+			if got := e.GetMsg(); got != tt.want {
+				t.Errorf("errorCoder.Msg() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -88,7 +88,7 @@ func Test_errorCode_Msg(t *testing.T) {
 
 func Test_detailErr_Error(t *testing.T) {
 	type fields struct {
-		errorCode errorCode
+		errorCode errorCoder
 		cause     error
 	}
 
@@ -115,7 +115,7 @@ func Test_detailErr_Error(t *testing.T) {
 
 func Test_detailErr_Format(t *testing.T) {
 	type fields struct {
-		errorCode errorCode
+		errorCode errorCoder
 		cause     error
 	}
 
@@ -127,7 +127,7 @@ func Test_detailErr_Format(t *testing.T) {
 		{
 			name: "full error",
 			fields: fields{
-				errorCode: errorCode{
+				errorCode: errorCoder{
 					code:    "TestCode",
 					message: "test message",
 				},
@@ -138,7 +138,7 @@ func Test_detailErr_Format(t *testing.T) {
 		{
 			name: "missing code",
 			fields: fields{
-				errorCode: errorCode{
+				errorCode: errorCoder{
 					message: "test message",
 				},
 				cause: fmt.Errorf("test cause"),
@@ -148,7 +148,7 @@ func Test_detailErr_Format(t *testing.T) {
 		{
 			name: "missing message",
 			fields: fields{
-				errorCode: errorCode{
+				errorCode: errorCoder{
 					code: "TestCode",
 				},
 				cause: fmt.Errorf("test cause"),
@@ -158,7 +158,7 @@ func Test_detailErr_Format(t *testing.T) {
 		{
 			name: "missing cause",
 			fields: fields{
-				errorCode: errorCode{
+				errorCode: errorCoder{
 					code:    "TestCode",
 					message: "test message",
 				},
@@ -169,7 +169,7 @@ func Test_detailErr_Format(t *testing.T) {
 		// {
 		// 	name: "full error with stack trace",
 		// 	fields: fields{
-		// 		errorCode: errorCode{
+		// 		errorCoder: errorCoder{
 		// 			code:    "TestCode",
 		// 			message: "test message",
 		// 		},
@@ -194,7 +194,7 @@ func Test_detailErr_Format(t *testing.T) {
 
 func Test_detailErr_Cause(t *testing.T) {
 	type fields struct {
-		errorCode errorCode
+		errorCode errorCoder
 		cause     error
 	}
 
@@ -212,7 +212,7 @@ func Test_detailErr_Cause(t *testing.T) {
 				&tt.fields.errorCode,
 				tt.fields.cause,
 			}
-			if err := e.Cause(); (err != nil) != tt.wantErr {
+			if err := e.GetCause(); (err != nil) != tt.wantErr {
 				t.Errorf("detailErr.Cause() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

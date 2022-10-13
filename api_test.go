@@ -3,6 +3,8 @@ package errors
 import (
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestWrap(t *testing.T) {
@@ -41,4 +43,35 @@ func TestWrap(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestUsage(t *testing.T) {
+	detailErr := New("name is empty")
+	_ = assert.Equal(t, "cause [name is empty]", detailErr.Error())
+
+	ErrBlankParameter := NewErrorCode("A0401", "required parameter is blank")
+	_ = assert.Equal(t, "code [A0401], msg [required parameter is blank]", ErrBlankParameter.Error())
+
+	detailErr = NewDetailError("A0401", "required parameter is blank", fmt.Errorf("name is empty"))
+	_ = assert.Equal(t, "code [A0401], msg [required parameter is blank], cause [name is empty]", detailErr.Error())
+
+	detailErr = Errorf("%s is not exist", "John")
+	_ = assert.Equal(t, "cause [John is not exist]", detailErr.Error())
+
+	detailErr = Code("A0401").Msg("required parameter is blank").Cause(fmt.Errorf("name is empty"))
+	_ = assert.Equal(t, "code [A0401], msg [required parameter is blank], cause [name is empty]", detailErr.Error())
+
+	detailErr = Code("A0401").Msg("required parameter is blank")
+	_ = assert.Equal(t, "code [A0401], msg [required parameter is blank]", detailErr.Error())
+
+	detailErr = Code("A0401").Cause(fmt.Errorf("name is empty"))
+	_ = assert.Equal(t, "code [A0401], cause [name is empty]", detailErr.Error())
+
+	detailErr = Msg("required parameter is blank")
+	_ = assert.Equal(t, "msg [required parameter is blank]", detailErr.Error())
+
+	detailErr = ErrBlankParameter.Cause(fmt.Errorf("name is empty"))
+	_ = assert.Equal(t, "code [A0401], msg [required parameter is blank], cause [name is empty]", detailErr.Error())
+
+	_ = assert.True(t, InvalidErrorCode(""))
 }

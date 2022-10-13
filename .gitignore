@@ -23,6 +23,7 @@
 # ide
 .idea/
 *.iml
+.fleet/
 
 # pkg version files
 z_update_version.go
