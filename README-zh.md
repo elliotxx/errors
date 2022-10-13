@@ -28,11 +28,15 @@ go get -u github.com/elliotxx/errors
 ```
 
 ## ✨ 特性
+
 * 更详细的错误信息，比如错误码、错误信息、错误原因、错误堆栈等
 * 更强大的 API
 * 轻量级
 
 ## 📚 样例
+
+样例 1:
+
 ```go
 package errcodes
 
@@ -52,4 +56,35 @@ var (
 	WaitUserOperation          = errors.NewErrorCode("A0503", "please wait for user operation")
 	RepeatedRequest            = errors.NewErrorCode("A0504", "repeated request")
 )
+```
+
+样例 2:
+
+```go
+detailErr := New("name is empty")
+// detailErr.Error() returns "cause [name is empty]"
+
+ErrBlankParameter := NewErrorCode("A0401", "required parameter is blank")
+// ErrBlankParameter.Error() returns "code [A0401], msg [required parameter is blank]"
+
+detailErr = NewDetailError("A0401", "required parameter is blank", fmt.Errorf("name is empty"))
+// detailErr.Error() returns "code [A0401], msg [required parameter is blank], cause [name is empty]"
+
+detailErr = Errorf("%s is not exist", "John")
+// detailErr.Error() returns "cause [John is not exist]"
+
+detailErr = Code("A0401").Msg("required parameter is blank").Cause(fmt.Errorf("name is empty"))
+// detailErr.Error() returns "code [A0401], msg [required parameter is blank], cause [name is empty]"
+
+detailErr = Code("A0401").Msg("required parameter is blank")
+// detailErr.Error() returns "code [A0401], msg [required parameter is blank]"
+
+detailErr = Code("A0401").Cause(fmt.Errorf("name is empty"))
+// detailErr.Error() returns "code [A0401], cause [name is empty]"
+
+detailErr = Msg("required parameter is blank")
+// detailErr.Error() returns "msg [required parameter is blank]"
+
+detailErr = ErrBlankParameter.Cause(fmt.Errorf("name is empty"))
+// detailErr.Error() returns "code [A0401], msg [required parameter is blank], cause [name is empty]"
 ```
