@@ -82,6 +82,16 @@ detailErr = Code("A0401").Msg("required parameter is blank")
 detailErr = Code("A0401").Cause(fmt.Errorf("name is empty"))
 // detailErr.Error() returns "code [A0401], cause [name is empty]"
 
+detailErr = Code("A0401").Causef("name is empty")
+// detailErr.Error() returns "code [A0401], cause [name is empty]"
+
+detailErr = Code("A0401").Causef("%s is empty", "name")
+// detailErr.Error() returns "code [A0401], cause [name is empty]"
+
+rootCause := fmt.Errorf("name is empty")
+detailErr = Code("A0401").Causewf(rootCause, "failed to validate parameter")
+// detailErr.Error() returns "code [A0401], cause [failed to validate parameter: name is empty]"
+
 detailErr = Msg("required parameter is blank")
 // detailErr.Error() returns "msg [required parameter is blank]"
 

@@ -63,7 +63,11 @@ func (e *errorCoder) Cause(err error) DetailError {
 	return ee
 }
 
-func (e *errorCoder) Causef(err error, format string, args ...interface{}) DetailError {
+func (e *errorCoder) Causef(format string, args ...interface{}) DetailError {
+	return e.Cause(errors2.Errorf(format, args...))
+}
+
+func (e *errorCoder) Causewf(err error, format string, args ...interface{}) DetailError {
 	return e.Cause(errors2.Wrapf(err, format, args...))
 }
 
@@ -169,7 +173,11 @@ func (e *detailErr) Cause(err error) DetailError {
 	return ee
 }
 
-func (e *detailErr) Causef(err error, format string, args ...interface{}) DetailError {
+func (e *detailErr) Causef(format string, args ...interface{}) DetailError {
+	return e.Cause(errors2.Errorf(format, args...))
+}
+
+func (e *detailErr) Causewf(err error, format string, args ...interface{}) DetailError {
 	return e.Cause(errors2.Wrapf(err, format, args...))
 }
 

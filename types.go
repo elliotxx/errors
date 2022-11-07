@@ -13,7 +13,8 @@ type ErrorCode interface {
 	Msg(msg string) ErrorCode
 
 	Cause(err error) DetailError
-	Causef(err error, format string, args ...interface{}) DetailError
+	Causef(format string, args ...interface{}) DetailError
+	Causewf(err error, format string, args ...interface{}) DetailError
 }
 
 type DetailError interface {
@@ -28,6 +29,7 @@ type DetailError interface {
 	Code(code string) DetailError
 	Msg(msg string) DetailError
 	Cause(err error) DetailError
-	Causef(err error, format string, args ...interface{}) DetailError
+	Causef(format string, args ...interface{}) DetailError
+	Causewf(err error, format string, args ...interface{}) DetailError
 	ErrorCode(errorCode ErrorCode) DetailError
 }

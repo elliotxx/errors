@@ -60,7 +60,13 @@ func Cause(cause error) DetailError {
 	}
 }
 
-func Causef(err error, format string, args ...interface{}) DetailError {
+func Causef(format string, args ...interface{}) DetailError {
+	return &detailErr{
+		cause: errors2.Errorf(format, args...),
+	}
+}
+
+func Causewf(err error, format string, args ...interface{}) DetailError {
 	return &detailErr{
 		cause: errors2.Wrapf(err, format, args...),
 	}
