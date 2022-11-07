@@ -60,6 +60,12 @@ func Cause(cause error) DetailError {
 	}
 }
 
+func Causef(err error, format string, args ...interface{}) DetailError {
+	return &detailErr{
+		cause: errors2.Wrapf(err, format, args...),
+	}
+}
+
 func InvalidErrorCode(code string) bool {
 	return strings.TrimSpace(code) == ""
 }

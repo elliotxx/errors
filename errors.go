@@ -3,6 +3,8 @@ package errors
 import (
 	"fmt"
 	"io"
+
+	errors2 "github.com/pkg/errors"
 )
 
 var _ ErrorCode = (*errorCoder)(nil)
@@ -59,6 +61,10 @@ func (e *errorCoder) Cause(err error) DetailError {
 	ee.cause = err
 
 	return ee
+}
+
+func (e *errorCoder) Causef(err error, format string, args ...interface{}) DetailError {
+	return e.Cause(errors2.Wrapf(err, format, args...))
 }
 
 func (e *errorCoder) Error() string {
@@ -161,6 +167,10 @@ func (e *detailErr) Cause(err error) DetailError {
 	ee.cause = err
 
 	return ee
+}
+
+func (e *detailErr) Causef(err error, format string, args ...interface{}) DetailError {
+	return e.Cause(errors2.Wrapf(err, format, args...))
 }
 
 func (e *detailErr) ErrorCode(errCode ErrorCode) DetailError {

@@ -67,6 +67,10 @@ func TestUsage(t *testing.T) {
 	detailErr = Code("A0401").Cause(fmt.Errorf("name is empty"))
 	_ = assert.Equal(t, "code [A0401], cause [name is empty]", detailErr.Error())
 
+	rootCause := fmt.Errorf("name is empty")
+	detailErr = Code("A0401").Causef(rootCause, "failed to validate parameter")
+	_ = assert.Equal(t, "code [A0401], cause [failed to validate parameter: name is empty]", detailErr.Error())
+
 	detailErr = Msg("required parameter is blank")
 	_ = assert.Equal(t, "msg [required parameter is blank]", detailErr.Error())
 
